@@ -1,0 +1,31 @@
+{
+    "name": "zakrzu/yii2-p24",
+    "description": "www.przelewy24.pl Yii2 component",
+    "type": "yii2-extension",
+
+    "require": {
+        "yiisoft/yii2": "^2.0",
+        "pear/HTTP_Request2":"v2.3.0"
+    },
+    "require-dev": {
+        "codeception/codeception":"~2.1.0",
+        "codeception/specify":"*",
+        "codeception/verify":"*",
+        "yiisoft/yii2-codeception": "*",
+        "yiisoft/yii2-faker": "*"
+    },
+    "license": "BSD-2",
+    "authors": [
+        {
+            "name": "zakrzu",
+            "email": "zakrzu@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable":true,
+    "autoload": {
+        "psr-4": {
+            "zakrzu\\przelewy24\\": ""
+        }
+    }
+}
