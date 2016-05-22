@@ -1,6 +1,6 @@
 <?php
 
-namespace zakrzu\przelewy24\tests;
+namespace merigold\przelewy24\tests;
 
 class TestCase extends \yii\codeception\TestCase
 {

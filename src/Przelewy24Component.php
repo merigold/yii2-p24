@@ -6,7 +6,7 @@
  * https://www.przelewy24.pl/storage/app/media/pobierz/Instalacja/przelewy24_specyfikacja_3_2.pdf
  */
 
-namespace zakrzu\przelewy24\src;
+namespace merigold\przelewy24\src;
 
 
 use HTTP_Request2;

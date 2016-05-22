@@ -6,7 +6,7 @@
  * Date: 05.05.2016
  * Time: 22:18
  */
-class Przelewy24ComponentTest extends \zakrzu\przelewy24\tests\TestCase
+class Przelewy24ComponentTest extends \merigold\przelewy24\tests\TestCase
 {
 
 
@@ -26,7 +26,7 @@ class Przelewy24ComponentTest extends \zakrzu\przelewy24\tests\TestCase
                     'identityClass' => 'common\models\User',
                 ],
                 'p24'=>[
-                    'class'=>\zakrzu\przelewy24\src\Przelewy24Component::className(),
+                    'class'=>\merigold\przelewy24\src\Przelewy24Component::className(),
                     'merchant_id'=>$this->merchant_id,
                     'pos_id'=>$this->merchant_id,
                     'CRC'=>$this->CRC,
@@ -43,7 +43,7 @@ class Przelewy24ComponentTest extends \zakrzu\przelewy24\tests\TestCase
             $mockAdapter= new HTTP_Request2_Adapter_Mock();
             $mockAdapter->addResponse($response );
 
-            $stub = new HTTP_Request2(\zakrzu\przelewy24\src\Przelewy24Component::TEST_URL,HTTP_Request2::METHOD_POST);
+            $stub = new HTTP_Request2(\merigold\przelewy24\src\Przelewy24Component::TEST_URL,HTTP_Request2::METHOD_POST);
             $stub->setAdapter($mockAdapter);
 
             return $stub;
@@ -66,7 +66,7 @@ class Przelewy24ComponentTest extends \zakrzu\przelewy24\tests\TestCase
         $p24Connector = Yii::$app->p24;
 
         $model = $p24Connector->getModel();
-        $this->assertInstanceOf(\zakrzu\przelewy24\src\Przelewy24Model::className(),$model,"should be in correct object");
+        $this->assertInstanceOf(\merigold\przelewy24\src\Przelewy24Model::className(),$model,"should be in correct object");
 
     }
 

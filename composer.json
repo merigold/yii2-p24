@@ -1,5 +1,5 @@
 {
-    "name": "zakrzu/yii2-p24",
+    "name": "merigold/yii2-p24",
     "description": "www.przelewy24.pl Yii2 component",
     "type": "yii2-extension",
 
@@ -17,7 +17,7 @@
     "license": "BSD-2",
     "authors": [
         {
-            "name": "zakrzu",
+            "name": "merigold",
             "email": "zakrzu@gmail.com"
         }
     ],
@@ -25,7 +25,7 @@
     "prefer-stable":true,
     "autoload": {
         "psr-4": {
-            "zakrzu\\przelewy24\\": ""
+            "merigold\\przelewy24\\": ""
         }
     }
 }

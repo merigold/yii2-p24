@@ -1,5 +1,5 @@
 <?php
 return [
-    'id'=>'zakrzu/przelewy24',
+    'id'=>'merigold/przelewy24',
     'basePath' => dirname(__DIR__),
 ];
