@@ -35,12 +35,12 @@ final class Przelewy24Component extends Component
 
     const EVENT_CONFIRM_ORDER = 'p24_event_confirm_order';
     const EVENT_VERIFICATION_FAILED = 'p24_event_veryfication_failed';
-    
+
     public $testMode = true;
     public $CRC;
     public $merchant_id;
     public $pos_id;
-    
+
     public $eventHandlerClassName;
 
     protected $signHash;
@@ -74,23 +74,19 @@ final class Przelewy24Component extends Component
         if ($this->pos_id == null) {
             throw  new InvalidConfigException('pos_id is required');
         }
-        
-        
-        if($this->eventHandler!=null)
-        {
+
+
+        if ($this->eventHandler != null) {
             $this->eventHandler = new $this->eventHandlerClassName;
 
-            if(!$this->eventHandler instanceof Przelewy24EventHandler)
-            {
+            if (!$this->eventHandler instanceof Przelewy24EventHandler) {
                 throw  new InvalidConfigException('eventHandlerClassName must implement Przelewy24EventHandler interface');
             }
 
-            $this->on(self::EVENT_CONFIRM_ORDER,[$this->eventHandler,'handleOrderConfirmation']);
-            $this->on(self::EVENT_VERIFICATION_FAILED,[$this->eventHandler,'handleOrderVerificationFailed']);
+            $this->on(self::EVENT_CONFIRM_ORDER, [$this->eventHandler, 'handleOrderConfirmation']);
+            $this->on(self::EVENT_VERIFICATION_FAILED, [$this->eventHandler, 'handleOrderVerificationFailed']);
 
         }
-
-
 
 
     }
@@ -106,28 +102,27 @@ final class Przelewy24Component extends Component
 
         $result = $this->callUrl(self::ACTION_TEST_CONNECTION, $params);
 
-        if(isset($result['error']) && $result['error']==0)
+        if (isset($result['error']) && $result['error'] == 0) {
             return true;
-        else
-        {
-            Yii::error(VarDumper::dumpAsString($result),self::LOG_CATTEGORY);
+        }
+        else {
+            Yii::error(VarDumper::dumpAsString($result), self::LOG_CATTEGORY);
+
             return false;
         }
 
     }
 
 
-
     public function getModel()
     {
-        if($this->model==null)
-        {
+        if ($this->model == null) {
             $this->model = new Przelewy24Model();
             $this->model->p24_merchant_id = $this->merchant_id;
             $this->model->p24_pos_id = $this->merchant_id;
             $this->model->p24_session_id = Yii::$app->session->id;
             $this->model->p24_api_version = self::API_VERSION;
-            $this->model->p24_url_status = Url::toRoute("przelewy24/status/accept-payment",true);
+            $this->model->p24_url_status = Url::toRoute("przelewy24/status/accept-payment", true);
             $this->model->setCRC($this->CRC);
         }
 
@@ -138,8 +133,7 @@ final class Przelewy24Component extends Component
 
     public function getConfirmationModel()
     {
-        if($this->confirmationModel==null)
-        {
+        if ($this->confirmationModel == null) {
             $this->confirmationModel = new Przelewy24ConfirmModel();
             $this->confirmationModel->setCRC($this->CRC);
         }
@@ -148,34 +142,37 @@ final class Przelewy24Component extends Component
     }
 
 
-
     public function renderFormFields()
     {
+
         $html = "";
-        foreach ($this->model->getAttributes() as $name=>$value)
-        {
-            if(strrpos($name,'_X'))
-            {
-                $i=1;
-               foreach($value as $item)
-               {
-                   $html.=Html::HiddenInput(str_replace("X",$i,$name),$value);
-               }
+        if ($this->model->validate()) {
+
+            foreach ($this->model->getAttributes() as $name => $value) {
+                if (strrpos($name, '_X')) {
+                    $i = 1;
+                    foreach ($value as $item) {
+                        $html .= Html::HiddenInput(str_replace("X", $i, $name), $value);
+                    }
+                }
+                else {
+                    $html .= Html::HiddenInput($name, $value);
+                }
             }
-            else
-            {
-                $html.=Html::HiddenInput($name,$value);
-            }
+        }
+        else{
+            $html.= Html::errorSummary($this->model);
         }
 
 
-         return $html;
+        return $html;
     }
 
     public function getFormActionUrl()
     {
-        $url = $this->testMode?self::TEST_URL:self::PROD_URL;
-        $url.="/".self::ACTION_SEND_TRANSACTION;
+        $url = $this->testMode ? self::TEST_URL : self::PROD_URL;
+        $url .= "/" . self::ACTION_SEND_TRANSACTION;
+
         return $url;
     }
 
@@ -183,22 +180,23 @@ final class Przelewy24Component extends Component
     public function verifyTransaction()
     {
         $params = [
-            'p24_merchant_id' =>$this->confirmationModel->p24_merchant_id,
-            'p24_pos_id' =>$this->confirmationModel->p24_pos_id,
-            'p24_session_id'=>$this->confirmationModel->p24_session_id,
-            'p24_amount'=>$this->confirmationModel->p24_amount,
-            'p24_currency'=>$this->confirmationModel->p24_currency,
-            'p24_order_id'=>$this->confirmationModel->p24_order_id,
+            'p24_merchant_id' => $this->confirmationModel->p24_merchant_id,
+            'p24_pos_id' => $this->confirmationModel->p24_pos_id,
+            'p24_session_id' => $this->confirmationModel->p24_session_id,
+            'p24_amount' => $this->confirmationModel->p24_amount,
+            'p24_currency' => $this->confirmationModel->p24_currency,
+            'p24_order_id' => $this->confirmationModel->p24_order_id,
             'p24_sign' => $this->confirmationModel->p24_sign,
         ];
 
         $result = $this->callUrl(self::ACTION_V, $params);
 
-        if(isset($result['error']) && $result['error']==0)
+        if (isset($result['error']) && $result['error'] == 0) {
             return true;
-        else
-        {
-            Yii::error(VarDumper::dumpAsString($result),self::LOG_CATTEGORY);
+        }
+        else {
+            Yii::error(VarDumper::dumpAsString($result), self::LOG_CATTEGORY);
+
             return false;
         }
     }
@@ -219,13 +217,14 @@ final class Przelewy24Component extends Component
             $response = $request->send();
             if (200 == $response->getStatus()) {
                 return $this->parseCurlResponse($response->getBody());
-            } else {
-                $msg = 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .$response->getReasonPhrase();
+            }
+            else {
+                $msg = 'Unexpected HTTP status: ' . $response->getStatus() . ' ' . $response->getReasonPhrase();
                 throw new HTTP_Request2_Exception($msg);
             }
         } catch (HTTP_Request2_Exception $e) {
-            Yii::error('Curl exec error: ' . VarDumper::dumpAsString($e->getMessage()),self::LOG_CATTEGORY);
-            throw new InvalidCallException('Curl exec error '.$e->getMessage(), 203);
+            Yii::error('Curl exec error: ' . VarDumper::dumpAsString($e->getMessage()), self::LOG_CATTEGORY);
+            throw new InvalidCallException('Curl exec error ' . $e->getMessage(), 203);
         }
 
     }
@@ -239,10 +238,12 @@ final class Przelewy24Component extends Component
     private function initCurlResource($url, $params)
     {
 
-        $request = Yii::$container->get('HTTP_Request2',[
-            $url, HTTP_Request2::METHOD_POST,[
-                'ssl_verify_peer'=>false,
-                'ssl_verify_host'=>false,
+        $request = Yii::$container->get('HTTP_Request2', [
+            $url,
+            HTTP_Request2::METHOD_POST,
+            [
+                'ssl_verify_peer' => false,
+                'ssl_verify_host' => false,
                 ''
             ]
         ]);
@@ -250,7 +251,8 @@ final class Przelewy24Component extends Component
         //$request = new HTTP_Request2();
         $request->addPostParameter($params);
         $user_agent = "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)";
-        $request->setHeader(['User-Agent'=>$user_agent ]);
+        $request->setHeader(['User-Agent' => $user_agent]);
+
         return $request;
     }
 

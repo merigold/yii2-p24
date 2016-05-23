@@ -12,8 +12,8 @@ class Przelewy24ComponentTest extends \merigold\przelewy24\tests\TestCase
 
     protected $errorResponse="error=1&errorMessage=jakiś tam tekst";
     protected $succesresponse="error=0&errorMessage=";
-    protected $merchant_id = '48220';
-    protected $CRC = 'debdc0c43588239b';
+    protected $merchant_id = '11111';
+    protected $CRC = '1111111';
 
     public function setUp()
     {
