@@ -18,6 +18,7 @@ use yii\base\Component;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\helpers\VarDumper;
 
 final class Przelewy24Component extends Component
@@ -126,6 +127,7 @@ final class Przelewy24Component extends Component
             $this->model->p24_pos_id = $this->merchant_id;
             $this->model->p24_session_id = Yii::$app->session->id;
             $this->model->p24_api_version = self::API_VERSION;
+            $this->model->p24_url_status = Url::toRoute("przelewy24/status/accept-payment",true);
             $this->model->setCRC($this->CRC);
         }
 
@@ -211,7 +213,7 @@ final class Przelewy24Component extends Component
 
         $url = $this->testMode ? self::TEST_URL : self::PROD_URL;
         $url .= "/" . $action;
-        
+
         $request = $this->initCurlResource($url, $params);
         try {
             $response = $request->send();
