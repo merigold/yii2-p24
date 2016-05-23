@@ -6,7 +6,7 @@
  * Time: 21:24
  */
 
-namespace merigold\przelewy24\src;
+namespace merigold\przelewy24\src\models;
 
 
 use yii\base\Model;

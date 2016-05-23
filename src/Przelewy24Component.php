@@ -11,6 +11,8 @@ namespace merigold\przelewy24\src;
 
 use HTTP_Request2;
 use HTTP_Request2_Exception;
+use merigold\przelewy24\src\models\Przelewy24ConfirmModel;
+use merigold\przelewy24\src\models\Przelewy24Model;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidCallException;
@@ -28,12 +30,17 @@ final class Przelewy24Component extends Component
 
     const ACTION_TEST_CONNECTION = 'testConnection';
     const ACTION_SEND_TRANSACTION = 'trnDirect';
+    const ACTION_VERIFY_TRANSACTION = 'trnVerify';
 
-
+    const EVENT_CONFIRM_ORDER = 'p24_event_confirm_order';
+    const EVENT_VERIFICATION_FAILED = 'p24_event_veryfication_failed';
+    
     public $testMode = true;
     public $CRC;
     public $merchant_id;
     public $pos_id;
+    
+    public $eventHandlerClassName;
 
     protected $signHash;
 
@@ -41,6 +48,17 @@ final class Przelewy24Component extends Component
      * @var Przelewy24Model
      */
     protected $model;
+
+
+    /**
+     * @var Przelewy24ConfirmModel
+     */
+    protected $confirmationModel;
+
+    /**
+     * @var Przelewy24EventHandler
+     */
+    protected $eventHandler;
 
     public function init()
     {
@@ -55,6 +73,25 @@ final class Przelewy24Component extends Component
         if ($this->pos_id == null) {
             throw  new InvalidConfigException('pos_id is required');
         }
+        
+        
+        if($this->eventHandler!=null)
+        {
+            $this->eventHandler = new $this->eventHandlerClassName;
+
+            if(!$this->eventHandler instanceof Przelewy24EventHandler)
+            {
+                throw  new InvalidConfigException('eventHandlerClassName must implement Przelewy24EventHandler interface');
+            }
+
+            $this->on(self::EVENT_CONFIRM_ORDER,[$this->eventHandler,'handleOrderConfirmation']);
+            $this->on(self::EVENT_VERIFICATION_FAILED,[$this->eventHandler,'handleOrderVerificationFailed']);
+
+        }
+
+
+
+
     }
 
 
@@ -97,6 +134,18 @@ final class Przelewy24Component extends Component
     }
 
 
+    public function getConfirmationModel()
+    {
+        if($this->confirmationModel==null)
+        {
+            $this->confirmationModel = new Przelewy24ConfirmModel();
+            $this->confirmationModel->setCRC($this->CRC);
+        }
+
+        return $this->confirmationModel;
+    }
+
+
 
     public function renderFormFields()
     {
@@ -128,6 +177,30 @@ final class Przelewy24Component extends Component
         return $url;
     }
 
+
+    public function verifyTransaction()
+    {
+        $params = [
+            'p24_merchant_id' =>$this->confirmationModel->p24_merchant_id,
+            'p24_pos_id' =>$this->confirmationModel->p24_pos_id,
+            'p24_session_id'=>$this->confirmationModel->p24_session_id,
+            'p24_amount'=>$this->confirmationModel->p24_amount,
+            'p24_currency'=>$this->confirmationModel->p24_currency,
+            'p24_order_id'=>$this->confirmationModel->p24_order_id,
+            'p24_sign' => $this->confirmationModel->p24_sign,
+        ];
+
+        $result = $this->callUrl(self::ACTION_V, $params);
+
+        if(isset($result['error']) && $result['error']==0)
+            return true;
+        else
+        {
+            Yii::error(VarDumper::dumpAsString($result),self::LOG_CATTEGORY);
+            return false;
+        }
+    }
+
     private function generateSign()
     {
         return md5($this->pos_id . "|" . $this->CRC);
@@ -138,8 +211,7 @@ final class Przelewy24Component extends Component
 
         $url = $this->testMode ? self::TEST_URL : self::PROD_URL;
         $url .= "/" . $action;
-
-        //$ch = $this->initCurlResource($url, $params);
+        
         $request = $this->initCurlResource($url, $params);
         try {
             $response = $request->send();
