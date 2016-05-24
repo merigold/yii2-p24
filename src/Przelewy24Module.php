@@ -14,4 +14,5 @@ use yii\base\Module;
 class Przelewy24Module extends Module
 {
 
+        public $controllerNamespace = "merigold\przelewy24\src\controllers";
 }

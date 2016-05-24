@@ -68,7 +68,7 @@ class Przelewy24Model extends Model
     public function rules()
     {
         return [
-            [['p24_merchant_id','p24_pos_id','p24_session_id','p24_amount','p24_currency','p24_description','p24_email','p24_country','p24_url_return','p24_api_version','p24_sign'], 'required'],
+            [['p24_merchant_id','p24_pos_id','p24_session_id','p24_amount','p24_currency','p24_description','p24_email','p24_country','p24_url_return','p24_api_version'], 'required'],
             [
                 [
                     'p24_merchant_id',

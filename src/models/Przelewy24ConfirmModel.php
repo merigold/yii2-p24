@@ -21,7 +21,7 @@ class Przelewy24ConfirmModel extends Model
     public $p24_currency;
     public $p24_order_id;
     public $p24_method;
-    public $p24_statment;
+    public $p24_statement;
     public $p24_sign;
 
     protected $CRC;
