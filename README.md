@@ -25,7 +25,7 @@ composer require "merigold/yii2-p24:~1.0"
 Usage
 -
 
-config file:
+**config file:**
 
 
 ```PHP
@@ -49,7 +49,7 @@ config file:
 
 ```
 
-create from controller
+**create from controller:**
 
 ```php
 
@@ -75,7 +75,7 @@ public function actionIndex()
 ```
 
 
-view file
+**view file:**
 
 ```php
 <?= Html::beginForm($p24Connector->FormActionUrl) ?>
@@ -88,9 +88,12 @@ view file
 ```
 
 
+**Create EventHandler Class**
+
 Success callback from przelewy24 call action: przelewy24/status/accept-payment
 
-This acction after checksum validate triiger succes event.
+This acction after checksum validate triiger handleOrderConfirmation().
+
 
 ```php
 
