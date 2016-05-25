@@ -65,7 +65,7 @@ public function actionIndex()
         $model->p24_email  = <your params>;
         $model->p24_country  = <your params>;
         $model->p24_url_return  = <your params>;
-
+        $model->p24_session_id = <your unique session id e.g. order_id+user_id+session_id
 
 		... other payment params
 
