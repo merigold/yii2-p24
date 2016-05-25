@@ -132,7 +132,7 @@ final class Przelewy24Component extends Component
             $this->model->p24_pos_id = $this->merchant_id;
             $this->model->p24_session_id = Yii::$app->session->isActive? Yii::$app->session->getId() : md5(time());
             $this->model->p24_api_version = self::API_VERSION;
-            $this->model->p24_url_status = Url::toRoute("przelewy24/status/accept-payment",true);
+            $this->model->p24_url_status = Url::toRoute("/przelewy24/status/accept-payment",true);
             $this->model->setCRC($this->CRC);
         }
 
